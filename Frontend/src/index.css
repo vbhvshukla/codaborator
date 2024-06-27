@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Custom scrollbar styles for the entire body */
+  body {
+    scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1); /* Firefox */
+  }
+  
+  /* Custom scrollbar styles for Webkit based browsers (Chrome, Safari, Opera) */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  /* Custom scrollbar styles for the container with id #aiText */
+  #aiText::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  #aiText::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  #aiText::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+  }
+
+  #aiText::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
