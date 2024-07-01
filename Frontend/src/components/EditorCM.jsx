@@ -8,23 +8,17 @@ function EditorCM({ socketRef, roomId }) {
   const editorRef = useRef();
   const [editorInstance, setEditorInstance] = useState(null);
   useEffect(() => {
-    if (socketRef.current && editorInstance) {
+    if (socketRef.current) {
       socketRef.current.on(ACTIONS.CODE_CHANGE, ({ value }) => {
         console.log(value);
         if (editorInstance) {
-          editorInstance.dispatch({
-            changes: {
-              from: 0,
-              to: editorInstance.state.doc.length,
-              insert: value,
-            },
-          });
+          editorInstance;
         }
       });
     } else {
-      console.log("SocketRef is null or editorInstance is not set");
+      console.log("SocketRef is null");
     }
-  }, [socketRef]);
+  }, [socketRef, editorInstance]);
 
   return (
     <CodeMirror
