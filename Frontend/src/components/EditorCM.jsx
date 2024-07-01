@@ -22,7 +22,7 @@ function EditorCM({ socketRef, roomId }) {
         }
       });
     } else {
-      console.log("socketRef is null or editorInstance is not set");
+      console.log("SocketRef is null or editorInstance is not set");
     }
   }, [socketRef]);
 
