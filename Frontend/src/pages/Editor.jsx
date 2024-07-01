@@ -19,10 +19,15 @@ function Editor() {
   //and even after changing does not rerender
   const socketRef = useRef(null);
   const location = useLocation(); //We sent data through navigate that we're getting
+
+  //Chatgpt suggestion
+  const [socketInitialized, setSocketInitialized] = useState(false);
+
   useEffect(() => {
     const init = async () => {
       //From backend initialize the initSocket function made in backend
       socketRef.current = await initSocket();
+      //console.log("Socket.current on Editor.jsx : ",socketRef.current);
 
       //Handle errors on connection
       function handleErrors(e) {
@@ -30,7 +35,7 @@ function Editor() {
         toast.error("Socker Connection Failed , Try again later!");
         navigate("/");
       }
-      socketRef.current.on("connect_error", (err) => handleErrors(err)); 
+      socketRef.current.on("connect_error", (err) => handleErrors(err));
       socketRef.current.on("connect_failed", (err) => handleErrors(err));
 
       //Send an event to server i.e a join event defined in Actions.js
@@ -65,9 +70,9 @@ function Editor() {
           return prev.filter((client) => client.socketId !== socketId);
         });
       });
+      setSocketInitialized(true);
     };
     init();
-
 
     //Cleaning function we have to remove these listeners(on) else memory leak will occur
     return () => {
@@ -76,9 +81,7 @@ function Editor() {
       //Unsubscribe socket io event
       socketRef.current?.off(ACTIONS.JOINED);
       socketRef.current?.off(ACTIONS.DISCONNECTED);
-
-    }
-
+    };
   }, []);
 
   const [clients, setClients] = useState([]);
@@ -124,7 +127,12 @@ function Editor() {
         </div>
         <div className="w-4/5 h-auto bg-white p-4 shadow-lg text-gray-600 rounded-sm">
           <div className="mt-4 mb-4">Editor</div>
-          <EditorCM />
+          {socketInitialized ? (
+            <EditorCM socketRef={socketRef} roomId={roomId} />
+          ) : (
+            <div>Loading...</div>
+          )}
+          {/* <EditorCM socketRef={socketRef} roomId={roomId}/> */}
         </div>
       </div>
     </>
