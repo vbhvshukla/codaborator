@@ -55,6 +55,12 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on(ACTIONS.CODE_CHANGE, ({ roomId, value }) => {
+    //This actions.code change is coming from client
+    //We need to get the list of all the users in the room
+    io.to(roomId).emit(ACTIONS.CODE_CHANGE, { value }); //This is getting send to client through server
+  });
+
   socket.on("disconnecting", () => {
     //Get all rooms
 
