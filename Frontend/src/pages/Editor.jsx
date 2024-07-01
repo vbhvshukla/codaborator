@@ -1,30 +1,92 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Clients from "../components/Clients";
 import EditorCM from "../components/EditorCM";
+import { initSocket } from "../../../Backend/socket";
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import ACTIONS from "../../Actions";
+import toast from "react-hot-toast";
 
 function Editor() {
-  const [clients, setClients] = useState([
-    {
-      socketId: 1,
-      username: "Vaibhav Shukla",
-    },
-    {
-      socketId: 2,
-      username: "Ankit Gupta",
-    },
-    {
-      socketId: 3,
-      username: "John Doe",
-    },
-    {
-      socketId: 4,
-      username: "Robert Downey Jr.",
-    },
-    {
-      socketId: 5,
-      username: "Kailash kher",
-    },
-  ]);
+  const { roomId } = useParams();
+  const navigate = useNavigate();
+
+  //useRef used to store data in multiple renders
+  //and even after changing does not rerender
+  const socketRef = useRef(null);
+  const location = useLocation(); //We sent data through navigate that we're getting
+  useEffect(() => {
+    const init = async () => {
+      //From backend initialize the initSocket function made in backend
+      socketRef.current = await initSocket();
+
+      //Handle errors on connection
+      function handleErrors(e) {
+        console.log("Socket error :: ", e);
+        toast.error("Socker Connection Failed , Try again later!");
+        navigate("/");
+      }
+      socketRef.current.on("connect_error", (err) => handleErrors(err)); 
+      socketRef.current.on("connect_failed", (err) => handleErrors(err));
+
+      //Send an event to server i.e a join event defined in Actions.js
+      //Along with this we send some other data
+      socketRef.current.emit(ACTIONS.JOIN, {
+        //The data
+        roomId,
+        username: location.state?.userName,
+      });
+
+      //Listening for joined event we will recieve data which we sent
+      socketRef.current.on(
+        ACTIONS.JOINED,
+        ({ clients, username, socketId }) => {
+          //As we are first getting joined and then getting all the clients connected
+          //So we dont have to notify myself
+          //But others only
+          if (username !== location.state.userName) {
+            toast.success(`${username} joined the room!`);
+            console.log(`${username} joined`);
+          }
+
+          setClients(clients);
+        }
+      );
+
+      //Listening for user disconnection
+      socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
+        toast.success(`${username} left the room!`);
+        //Update the clients list
+        setClients((prev) => {
+          return prev.filter((client) => client.socketId !== socketId);
+        });
+      });
+    };
+    init();
+
+
+    //Cleaning function we have to remove these listeners(on) else memory leak will occur
+    return () => {
+      //Disconnect socket
+      socketRef.current?.disconnect();
+      //Unsubscribe socket io event
+      socketRef.current?.off(ACTIONS.JOINED);
+      socketRef.current?.off(ACTIONS.DISCONNECTED);
+
+    }
+
+  }, []);
+
+  const [clients, setClients] = useState([]);
+
+  //If no username or id forcefully navigate to /
+  if (!location.state) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <>
