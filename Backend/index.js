@@ -2,6 +2,7 @@ import express from "express";
 import { Server } from "socket.io";
 import http from "http";
 import ACTIONS from "../Frontend/Actions.js";
+
 const port = process.env.PORT || 5000;
 
 const app = express();
@@ -56,6 +57,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on(ACTIONS.CODE_CHANGE, ({ roomId, value }) => {
+    console.log("Code is getting received");
     //This actions.code change is coming from client
     //We need to get the list of all the users in the room
     io.to(roomId).emit(ACTIONS.CODE_CHANGE, { value }); //This is getting send to client through server

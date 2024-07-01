@@ -7,10 +7,12 @@ import ACTIONS from "../../Actions";
 function EditorCM({ socketRef, roomId }) {
   const editorRef = useRef();
   const [editorInstance, setEditorInstance] = useState(null);
+  const [code, setCode] = useState("");
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.on(ACTIONS.CODE_CHANGE, ({ value }) => {
-        console.log(value);
+        console.log("The value got changed", value);
+        setCode(value);
         if (editorInstance) {
           editorInstance;
         }
@@ -18,33 +20,37 @@ function EditorCM({ socketRef, roomId }) {
     } else {
       console.log("SocketRef is null");
     }
-  }, [socketRef, editorInstance]);
+  }, [socketRef.current, editorInstance]);
 
   return (
-    <CodeMirror
-      ref={editorRef}
-      value="console.log('hello world!');"
-      className=""
-      height="515px"
-      basicSetup={{
-        lineNumbers: true,
-        highlightActiveLine: true,
-      }}
-      theme={vscodeDark}
-      extensions={[javascript({ jsx: true })]}
-      onChange={(value, viewUpdate) => {
-        console.log(value);
-        socketRef.current.emit(ACTIONS.CODE_CHANGE, {
-          roomId,
-          value,
-        });
-      }}
-      autoCorrect="true"
-      onCreateEditor={(editor) => {
-        setEditorInstance(editor);
-      }}
-      indentWithTab="true"
-    />
+    <>
+    <div ref={editorRef}>{code}</div>
+      <CodeMirror
+        ref={editorRef}
+        value="console.log('hello world!');"
+        className=""
+        height="515px"
+        basicSetup={{
+          lineNumbers: true,
+          highlightActiveLine: true,
+        }}
+        theme={vscodeDark}
+        extensions={[javascript({ jsx: true })]}
+        onChange={(value, viewUpdate) => {
+          // console.log(value);
+          socketRef.current.emit(ACTIONS.CODE_CHANGE, {
+            roomId,
+            value,
+          });
+        }}
+        autoCorrect="true"
+        onCreateEditor={(editor) => {
+          setEditorInstance(editor);
+        }}
+        indentWithTab="true"
+      />
+      
+    </>
   );
 }
 
