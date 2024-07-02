@@ -27,7 +27,7 @@ function EditorCM({ socketRef, roomId }) {
     <div ref={editorRef}>{code}</div>
       <CodeMirror
         ref={editorRef}
-        value="console.log('hello world!');"
+        value={code}
         className=""
         height="515px"
         basicSetup={{
