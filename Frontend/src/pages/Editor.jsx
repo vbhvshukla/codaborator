@@ -19,7 +19,7 @@ function Editor() {
   const socketRef = useRef(null); //useRef used to store data in multiple renders and even after changing does not rerender
   const location = useLocation(); //We sent data through navigate that we're getting
   const [socketInitialized, setSocketInitialized] = useState(false); //Chatgpt suggestion
-  
+
   useEffect(() => {
     const init = async () => {
       //Initialize the socket connection (defined in socket.js\\backend);
@@ -78,12 +78,25 @@ function Editor() {
     };
   }, []);
 
-  
-
   //------------------------------HANDLE NO STATE FOUND---------------------------------------
   if (!location.state) {
     return <Navigate to="/" />;
   }
+
+  //------------------------------Function to copy room id button------------------------------
+  const copyRoomId = async () => {
+    try {
+      await navigator.clipboard.writeText(roomId);
+      toast.success("Room ID copied successfully!");
+    } catch (error) {
+      toast.error("Failed to copy Room ID");
+    }
+  };
+
+  const leaveRoom = () => {
+    //Forcefully redirect
+    navigate("/");
+  };
 
   return (
     <>
@@ -107,6 +120,7 @@ function Editor() {
             <button
               type="submit"
               className="w-full px-4 py-2 mb-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-black shadow-md hover:text-black hover:bg-white focus:outline-none focus:ring-2"
+              onClick={copyRoomId}
             >
               <span className="w-full">Copy Room ID</span>
             </button>
@@ -114,13 +128,14 @@ function Editor() {
             <button
               type="submit"
               className="w-full px-4 py-2 text-base font-semibold text-center text-white transition duration-200 ease-in bg-red-700 shadow-md hover:text-black hover:bg-white focus:outline-none focus:ring-2"
+              onClick={leaveRoom}
             >
               <span className="w-full">Leave Room</span>
             </button>
           </div>
         </div>
         <div className="w-4/5 h-auto bg-white p-4 shadow-lg text-gray-600 rounded-sm">
-          <div className="mt-4 mb-4">Editor</div>
+          <div className="mt-4 mb-4 shadow-lg">Editor</div>
           {socketInitialized ? (
             <EditorCM socketRef={socketRef} roomId={roomId} />
           ) : (

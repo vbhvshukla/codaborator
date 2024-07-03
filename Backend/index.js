@@ -57,10 +57,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on(ACTIONS.CODE_CHANGE, ({ roomId, value }) => {
-    console.log("Code is getting received");
+    //We've to broadcast to every other apart from us
     //This actions.code change is coming from client
     //We need to get the list of all the users in the room
-    io.to(roomId).emit(ACTIONS.CODE_CHANGE, { value }); //This is getting send to client through server
+    socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { value }); //This is getting send to client through server
   });
 
   socket.on("disconnecting", () => {

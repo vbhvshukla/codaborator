@@ -11,10 +11,12 @@ function EditorCM({ socketRef, roomId }) {
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.on(ACTIONS.CODE_CHANGE, ({ value }) => {
-        console.log("The value got changed", value);
         setCode(value);
-        if (editorInstance) {
-          editorInstance;
+        // if (editorInstance) {
+        //   editorInstance;
+        // }
+        return () => {
+          socketRef.current.off(ACTIONS.CODE_CHANGE);
         }
       });
     } else {
@@ -24,10 +26,10 @@ function EditorCM({ socketRef, roomId }) {
 
   return (
     <>
-    <div ref={editorRef}>{code}</div>
       <CodeMirror
         ref={editorRef}
         value={code}
+        placeholder={"Enter something!"}
         className=""
         height="515px"
         basicSetup={{
@@ -49,7 +51,6 @@ function EditorCM({ socketRef, roomId }) {
         }}
         indentWithTab="true"
       />
-      
     </>
   );
 }
