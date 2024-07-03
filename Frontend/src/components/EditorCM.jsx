@@ -4,20 +4,19 @@ import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { javascript } from "@codemirror/lang-javascript";
 import ACTIONS from "../../Actions";
 
-function EditorCM({ socketRef, roomId }) {
-  const editorRef = useRef();
+function EditorCM({ socketRef, roomId, onCodeChange }) {
+  const editorRef = useRef(null);
   const [editorInstance, setEditorInstance] = useState(null);
   const [code, setCode] = useState("");
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.on(ACTIONS.CODE_CHANGE, ({ value }) => {
         setCode(value);
-        // if (editorInstance) {
-        //   editorInstance;
-        // }
+        onCodeChange(value);
+        // onCodeChange(value); //For auto Sync
         return () => {
           socketRef.current.off(ACTIONS.CODE_CHANGE);
-        }
+        };
       });
     } else {
       console.log("SocketRef is null");
@@ -39,7 +38,7 @@ function EditorCM({ socketRef, roomId }) {
         theme={vscodeDark}
         extensions={[javascript({ jsx: true })]}
         onChange={(value, viewUpdate) => {
-          // console.log(value);
+          
           socketRef.current.emit(ACTIONS.CODE_CHANGE, {
             roomId,
             value,

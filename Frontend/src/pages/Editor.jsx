@@ -19,6 +19,7 @@ function Editor() {
   const socketRef = useRef(null); //useRef used to store data in multiple renders and even after changing does not rerender
   const location = useLocation(); //We sent data through navigate that we're getting
   const [socketInitialized, setSocketInitialized] = useState(false); //Chatgpt suggestion
+  const codeRef = useRef(null); //As the code is in the editorCM.jsx we need to get it here on this page for auto sync
 
   useEffect(() => {
     const init = async () => {
@@ -53,6 +54,13 @@ function Editor() {
             console.log(`${username} joined`);
           }
           setClients(clients);
+
+          //Auto sync on first load but We need to get the code from the editor page to here
+          //As for every key stroke the code is changing so we cant use useState insteade we will use useRef
+          socketRef.current.emit(ACTIONS.SYNC_CODE, {
+            code: codeRef.current,
+            socketId,
+        });
         }
       );
 
@@ -137,7 +145,16 @@ function Editor() {
         <div className="w-4/5 h-auto bg-white p-4 shadow-lg text-gray-600 rounded-sm">
           <div className="mt-4 mb-4 shadow-lg">Editor</div>
           {socketInitialized ? (
-            <EditorCM socketRef={socketRef} roomId={roomId} />
+            <EditorCM
+              socketRef={socketRef}
+              roomId={roomId}
+              onCodeChange={(code) => {
+                codeRef.current = code;
+                //We're not getting the code here
+                // console.log("This is the code incoming from onCodeChange from Editor Component",code);
+                // console.log("this is the codeRef",codeRef.current);
+              }}
+            /> //onCodeChange for auto sync
           ) : (
             <div>Loading...</div>
           )}

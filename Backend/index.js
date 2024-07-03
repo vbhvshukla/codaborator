@@ -63,6 +63,15 @@ io.on("connection", (socket) => {
     socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { value }); //This is getting send to client through server
   });
 
+  //For syncing code on first join
+  //This socket id and code getting from editor page while emitting
+  socket.on(ACTIONS.SYNC_CODE, ({ socketId, code }) => {
+    io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
+});
+
+
+
+
   socket.on("disconnecting", () => {
     //Get all rooms
 
