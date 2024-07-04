@@ -151,8 +151,8 @@ function Editor() {
               onCodeChange={(code) => {
                 codeRef.current = code;
                 //We're not getting the code here
-                // console.log("This is the code incoming from onCodeChange from Editor Component",code);
-                // console.log("this is the codeRef",codeRef.current);
+                 console.log("This is the code incoming from onCodeChange from Editor Component",code);
+                 console.log("this is the codeRef",codeRef.current);
               }}
             /> //onCodeChange for auto sync
           ) : (

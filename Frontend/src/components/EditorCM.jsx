@@ -12,6 +12,7 @@ function EditorCM({ socketRef, roomId, onCodeChange }) {
     if (socketRef.current) {
       socketRef.current.on(ACTIONS.CODE_CHANGE, ({ value }) => {
         setCode(value);
+        console.log(value);
         onCodeChange(value);
         // onCodeChange(value); //For auto Sync
         return () => {

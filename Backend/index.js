@@ -2,14 +2,24 @@ import express from "express";
 import { Server } from "socket.io";
 import http from "http";
 import ACTIONS from "../Frontend/Actions.js";
+import path from "path";
 
 const port = process.env.PORT || 5000;
+
 
 const app = express();
 
 const server = http.createServer(app);
 
 const io = new Server(server);
+
+app.use(express.static('Frontend'));
+
+
+//__dirname is global variable that holds current working directory
+app.use((req,res,next)=> {
+  res.sendFile(path.join(__dirname, "Frontend/index.html"));
+});
 
 server.listen(process.env.PORT || 8000, () => {
   console.log(`Server is running at port : ${process.env.PORT}`);
