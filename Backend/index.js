@@ -7,13 +7,14 @@ import path from "path";
 const port = process.env.PORT || 5000;
 
 
+
 const app = express();
 
 const server = http.createServer(app);
 
 const io = new Server(server);
 
-app.use(express.static('Frontend'));
+app.use(express.static('Frontend/index.html'));
 
 
 //__dirname is global variable that holds current working directory

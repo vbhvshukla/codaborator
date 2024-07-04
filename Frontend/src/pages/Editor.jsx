@@ -102,10 +102,16 @@ function Editor() {
   };
 
   const leaveRoom = () => {
-    //Forcefully redirect
-    navigate("/");
+    if (window.confirm("Are you sure you want to leave the room?")) {
+      socketRef.current.emit(ACTIONS.LEAVE, {
+        roomId,
+        username: location.state.userName,
+      });
+      navigate("/");
+      window.location.reload();
+    }
   };
-
+  
   return (
     <>
       <div className="flex flex-wrap flex-auto">
